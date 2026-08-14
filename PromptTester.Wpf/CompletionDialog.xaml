@@ -1,0 +1,68 @@
+<Window x:Class="PromptTester.Wpf.CompletionDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Prompt Tester run completed"
+        Width="430"
+        SizeToContent="Height"
+        MinHeight="330"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Topmost="True"
+        Background="{DynamicResource CanvasBrush}"
+        FontFamily="{StaticResource BrandBodyFont}"
+        Foreground="{DynamicResource TextBrush}">
+    <Border Margin="2"
+            Padding="30,26,30,24"
+            Background="{DynamicResource BrandBlackBrush}"
+            BorderBrush="{DynamicResource AccentBrush}"
+            BorderThickness="1.5"
+            CornerRadius="18">
+        <StackPanel HorizontalAlignment="Center">
+            <Border Width="88"
+                    Height="88"
+                    Padding="5"
+                    HorizontalAlignment="Center"
+                    Background="{DynamicResource SurfaceRaisedBrush}"
+                    BorderBrush="{DynamicResource AccentBrush}"
+                    BorderThickness="1"
+                    CornerRadius="44">
+                <Image Source="Assets/prompt-tester-logo.png"
+                       Stretch="Uniform"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       AutomationProperties.Name="Prompt Tester logo" />
+            </Border>
+
+            <TextBlock Margin="0,18,0,0"
+                       HorizontalAlignment="Center"
+                       FontFamily="{StaticResource BrandDisplayFont}"
+                       FontSize="25"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextBrush}"
+                       Text="Run completed" />
+
+            <TextBlock x:Name="SummaryTextBlock"
+                       Margin="0,9,0,0"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap"
+                       FontSize="13"
+                       Foreground="{DynamicResource MutedTextBrush}" />
+
+            <TextBlock Margin="0,8,0,0"
+                       HorizontalAlignment="Center"
+                       FontSize="12"
+                       Foreground="{DynamicResource AccentTextBrush}"
+                       Text="Developed by C. Chaliotis" />
+
+            <Button Width="138"
+                    Margin="0,22,0,0"
+                    HorizontalAlignment="Center"
+                    Content="_Close"
+                    IsDefault="True"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Click="CloseButton_Click" />
+        </StackPanel>
+    </Border>
+</Window>

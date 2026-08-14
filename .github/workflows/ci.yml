@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-verify:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Check public-tree hygiene
+        shell: powershell
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-PublicTree.ps1
+
+      - name: Restore
+        run: dotnet restore PromptTester.sln
+
+      - name: Verify formatting
+        run: dotnet format PromptTester.sln --verify-no-changes --no-restore
+
+      - name: Build
+        run: dotnet build PromptTester.sln -c Release --no-restore -warnaserror
+
+      - name: Run regression checks
+        run: dotnet run --project verification\PromptTester.Verification\PromptTester.Verification.csproj -c Release --no-restore

@@ -1,0 +1,572 @@
+<Window x:Class="PromptTester.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
+        Title="Prompt Tester"
+        Icon="Assets/prompt-tester-app-icon.ico"
+        Height="900"
+        Width="1400"
+        MinHeight="650"
+        MinWidth="860"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource CanvasBrush}"
+        FontFamily="{StaticResource BrandBodyFont}"
+        Foreground="{DynamicResource TextBrush}"
+        Loaded="MainWindow_Loaded"
+        Closing="MainWindow_Closing">
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Height="100"
+                Padding="18,10"
+                Background="{DynamicResource BrandBlackBrush}"
+                BorderBrush="{DynamicResource AccentBrush}"
+                BorderThickness="1"
+                CornerRadius="14"
+                ClipToBounds="True">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Image Grid.ColumnSpan="2"
+                       Width="76"
+                       Height="80"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Source="Assets/prompt-tester-logo.png"
+                       Stretch="Uniform"
+                       Opacity="1"
+                       IsHitTestVisible="False"
+                       Panel.ZIndex="0"
+                       RenderOptions.BitmapScalingMode="HighQuality" />
+
+                <StackPanel Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" Panel.ZIndex="1">
+                    <TextBlock Text="Prompt Tester"
+                               FontFamily="{StaticResource BrandDisplayFont}"
+                               FontSize="25"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource TextBrush}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Panel.ZIndex="1">
+                    <TextBlock Text="Developed by C. Chaliotis"
+                               FontFamily="{StaticResource BrandDisplayFont}"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource AccentTextBrush}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="0,14,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition x:Name="DefinitionRow" Height="4*" MinHeight="280" />
+                <RowDefinition Height="10" />
+                <RowDefinition x:Name="ResultsRow" Height="1.35*" MinHeight="105" />
+            </Grid.RowDefinitions>
+
+            <Grid x:Name="ConfigurationPanel" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="0" />
+                    <ColumnDefinition Width="0" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="14" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Row="0" Grid.ColumnSpan="3" Margin="0,0,0,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Extraction definition" Style="{StaticResource SectionTitleStyle}" />
+                                <TextBlock Margin="0,3,0,0"
+                                           Text="Define what to extract and how the model should handle uncertainty."
+                                           Style="{StaticResource HelperTextStyle}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border Height="36"
+                                        Margin="0,0,10,0"
+                                        Padding="13,0"
+                                        VerticalAlignment="Center"
+                                        Background="{DynamicResource AccentBrush}"
+                                        BorderBrush="{DynamicResource BrandBlackBrush}"
+                                        BorderThickness="2"
+                                        CornerRadius="10">
+                                    <TextBlock x:Name="CurrentModelBadgeText"
+                                               VerticalAlignment="Center"
+                                               FontSize="12"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource OnAccentBrush}"
+                                               Text="Current model: Not selected" />
+                                </Border>
+                                <Button Width="38" Height="36" Padding="0"
+                                        ToolTip="Run settings" Style="{StaticResource CompactButtonStyle}"
+                                        Click="SettingsButton_Click">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="17" Text="&#xE713;" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Grid.Row="1" Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Label x:Name="PromptLabel"
+                                   Content="Extraction prompt"
+                                   Target="{Binding ElementName=PromptTextBox}"
+                                   Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox x:Name="PromptTextBox"
+                                     Grid.Row="1"
+                                     MinHeight="220"
+                                     AcceptsReturn="True"
+                                     TextWrapping="Wrap"
+                                     VerticalContentAlignment="Top"
+                                     VerticalScrollBarVisibility="Auto"
+                                     HorizontalScrollBarVisibility="Disabled"
+                                     TextChanged="PromptTextBox_TextChanged"
+                                     automation:AutomationProperties.Name="Extraction prompt" />
+                            <Grid Grid.Row="2" Margin="0,6,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Be specific about formatting, missing values, and document-specific rules."
+                                           TextWrapping="Wrap"
+                                           Style="{StaticResource HelperTextStyle}" />
+                                <TextBlock x:Name="PromptCharacterCountText"
+                                           Grid.Column="1"
+                                           Margin="12,0,0,0"
+                                           HorizontalAlignment="Right"
+                                           Style="{StaticResource HelperTextStyle}" />
+                            </Grid>
+                        </Grid>
+
+                        <Grid Grid.Row="1" Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Label Content="Fields to extract"
+                                   Target="{Binding ElementName=FieldsTextBox}"
+                                   Style="{StaticResource FieldLabelStyle}" />
+                            <TextBox x:Name="FieldsTextBox"
+                                     Grid.Row="1"
+                                     MinHeight="220"
+                                     AcceptsReturn="True"
+                                     TextWrapping="Wrap"
+                                     VerticalContentAlignment="Top"
+                                     VerticalScrollBarVisibility="Auto"
+                                     HorizontalScrollBarVisibility="Disabled"
+                                     TextChanged="FieldsTextBox_TextChanged"
+                                     automation:AutomationProperties.Name="Fields to extract" />
+                            <Grid Grid.Row="2" Margin="0,6,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="One field per line; commas are also accepted. Repeated values can be returned as arrays."
+                                           TextWrapping="Wrap"
+                                           Style="{StaticResource HelperTextStyle}" />
+                                <TextBlock x:Name="FieldCountText"
+                                           Grid.Column="1"
+                                           Margin="12,0,0,0"
+                                           HorizontalAlignment="Right"
+                                           Style="{StaticResource HelperTextStyle}" />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="2"
+                        Visibility="Collapsed"
+                        Padding="0"
+                        Style="{StaticResource CardStyle}">
+                    <ScrollViewer x:Name="ConfigurationScrollViewer"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  Padding="20">
+                        <StackPanel>
+                            <TextBlock Text="Run configuration" Style="{StaticResource SectionTitleStyle}" />
+                            <TextBlock Margin="0,3,0,14"
+                                       Text="Profiles, credentials, model, input, and output."
+                                       Style="{StaticResource HelperTextStyle}" />
+
+                            <Label Content="Profile"
+                                   Target="{Binding ElementName=ProfileComboBox}"
+                                   Style="{StaticResource FieldLabelStyle}" />
+                            <Grid Margin="0,0,0,14">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="6" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="6" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="6" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ComboBox x:Name="ProfileComboBox"
+                                          IsEditable="True"
+                                          automation:AutomationProperties.Name="Profile name" />
+                                <Button Grid.Column="2"
+                                        Content="_Save"
+                                        Style="{StaticResource CompactButtonStyle}"
+                                        Click="SaveProfileButton_Click" />
+                                <Button Grid.Column="4"
+                                        Content="_Load"
+                                        Style="{StaticResource CompactButtonStyle}"
+                                        Click="LoadProfileButton_Click" />
+                                <Button Grid.Column="6"
+                                        Content="_Delete"
+                                        Style="{StaticResource DangerButtonStyle}"
+                                        MinHeight="34"
+                                        Padding="10,5"
+                                        FontSize="12"
+                                        Click="DeleteProfileButton_Click" />
+                            </Grid>
+
+                            <Label Content="OpenAI API key"
+                                   Target="{Binding ElementName=ApiKeyPasswordBox}"
+                                   Style="{StaticResource FieldLabelStyle}" />
+                            <PasswordBox x:Name="ApiKeyPasswordBox"
+                                         automation:AutomationProperties.Name="OpenAI API key" />
+                            <TextBlock Margin="0,5,0,14"
+                                       Text="The key stays in this session and is never saved. Selected documents are sent to the OpenAI API; requests use store=false."
+                                       Style="{StaticResource HelperTextStyle}" />
+
+                            <Label Content="Model"
+                                   Target="{Binding ElementName=ModelComboBox}"
+                                   Style="{StaticResource FieldLabelStyle}" />
+                            <ComboBox x:Name="ModelComboBox"
+                                      IsEditable="False"
+                                      SelectedValuePath="Id"
+                                      SelectionChanged="ModelComboBox_SelectionChanged"
+                                      automation:AutomationProperties.Name="OpenAI model">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="2,3" MinWidth="280">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" />
+                                                <TextBlock Text="{Binding Id}"
+                                                           Margin="0,2,0,0"
+                                                           FontSize="11"
+                                                           Foreground="{DynamicResource MutedTextBrush}" />
+                                            </StackPanel>
+                                            <Border Grid.Column="1"
+                                                    Margin="12,0,0,0"
+                                                    Padding="7,3"
+                                                    Background="{DynamicResource AccentSoftBrush}"
+                                                    CornerRadius="9"
+                                                    VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Badge}"
+                                                           FontSize="10"
+                                                           Foreground="{DynamicResource AccentTextBrush}" />
+                                            </Border>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <Border Margin="0,7,0,14"
+                                    Padding="11"
+                                    Background="{DynamicResource SurfaceRaisedBrush}"
+                                    BorderBrush="{DynamicResource BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8">
+                                <StackPanel>
+                                    <TextBlock x:Name="ModelDescriptionText"
+                                               FontSize="12"
+                                               TextWrapping="Wrap"
+                                               Foreground="{DynamicResource TextBrush}" />
+                                    <TextBlock x:Name="ModelPriceText"
+                                               Margin="0,4,0,0"
+                                               Style="{StaticResource HelperTextStyle}" />
+                                    <TextBlock x:Name="ModelSelectionWarningText"
+                                               Margin="0,4,0,0"
+                                               Foreground="{DynamicResource ErrorBrush}"
+                                               FontSize="12"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+
+                            <Label Content="Visual detail"
+                                   Target="{Binding ElementName=InputDetailComboBox}"
+                                   Style="{StaticResource FieldLabelStyle}" />
+                            <ComboBox x:Name="InputDetailComboBox"
+                                      IsEditable="False"
+                                      SelectedValuePath="Id"
+                                      automation:AutomationProperties.Name="Image and PDF detail level">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="2,2">
+                                            <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Description}"
+                                                       Margin="0,1,0,0"
+                                                       FontSize="11"
+                                                       Foreground="{DynamicResource MutedTextBrush}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <TextBlock Margin="0,5,0,14"
+                                       Text="Low controls token cost; High is better for fine print and dense layouts."
+                                       Style="{StaticResource HelperTextStyle}" />
+
+                            <Label Content="Input folder"
+                                   Target="{Binding ElementName=ImageFolderTextBox}"
+                                   Style="{StaticResource FieldLabelStyle}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="ImageFolderTextBox"
+                                         automation:AutomationProperties.Name="Input folder" />
+                                <Button Grid.Column="1"
+                                        Margin="7,0,0,0"
+                                        Content="Select _input..."
+                                        Style="{StaticResource CompactButtonStyle}"
+                                        Click="BrowseFolder_Click" />
+                            </Grid>
+                            <TextBlock Margin="0,5,0,14"
+                                       Text="Each PDF is one document. Images in the same folder are processed together in natural page order."
+                                       Style="{StaticResource HelperTextStyle}" />
+
+                            <Label Content="Excel report"
+                                   Target="{Binding ElementName=ExportFileTextBox}"
+                                   Style="{StaticResource FieldLabelStyle}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="ExportFileTextBox"
+                                         automation:AutomationProperties.Name="Excel report path" />
+                                <Button Grid.Column="1"
+                                        Margin="7,0,0,0"
+                                        Content="Choose _report..."
+                                        Style="{StaticResource CompactButtonStyle}"
+                                        Click="BrowseExportFile_Click" />
+                            </Grid>
+
+                            <Border Margin="0,12,0,0"
+                                    Padding="11"
+                                    Background="{DynamicResource WarningSoftBrush}"
+                                    BorderBrush="{DynamicResource WarningBorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8">
+                                <StackPanel>
+                                    <TextBlock Text="Decision logs enabled"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource WarningBrush}" />
+                                    <TextBlock Margin="0,3,0,0"
+                                               Text="One local .log file is written per processed document beside the Excel report. Logs can contain extracted document data."
+                                               Style="{StaticResource HelperTextStyle}" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+
+            <GridSplitter Grid.Row="1"
+                          Height="10"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center"
+                          Background="Transparent"
+                          ShowsPreview="True"
+                          ResizeDirection="Rows"
+                          Cursor="SizeNS"
+                          automation:AutomationProperties.Name="Resize configuration and results panels">
+                <GridSplitter.Template>
+                    <ControlTemplate TargetType="GridSplitter">
+                        <Grid Background="Transparent">
+                            <Border Width="56"
+                                    Height="3"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Background="{DynamicResource BorderStrongBrush}"
+                                    CornerRadius="2" />
+                        </Grid>
+                    </ControlTemplate>
+                </GridSplitter.Template>
+            </GridSplitter>
+
+            <Border Grid.Row="2" Padding="0" Style="{StaticResource CardStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0"
+                            Padding="16,12"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="0,0,0,1">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Results" Style="{StaticResource SectionTitleStyle}" />
+                                    <TextBlock x:Name="ResultCountText"
+                                               Margin="9,2,0,0"
+                                               Text="No documents scanned"
+                                               Style="{StaticResource HelperTextStyle}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <Button x:Name="OpenSelectedLogButton"
+                                            Content="Open selected log"
+                                            Margin="0,0,7,0"
+                                            IsEnabled="False"
+                                            Style="{StaticResource CompactButtonStyle}"
+                                            Click="OpenSelectedLogButton_Click" />
+                                    <Button x:Name="OpenLogsButton"
+                                            Content="Open logs folder"
+                                            Margin="0,0,7,0"
+                                            IsEnabled="False"
+                                            Style="{StaticResource CompactButtonStyle}"
+                                            Click="OpenLogsButton_Click" />
+                                    <Button x:Name="OpenReportButton"
+                                            Content="Open Excel report"
+                                            IsEnabled="False"
+                                            Style="{StaticResource CompactButtonStyle}"
+                                            Click="OpenReportButton_Click" />
+                                </StackPanel>
+                            </Grid>
+
+                            <WrapPanel Grid.Row="1" Margin="0,10,0,0">
+                                <TextBlock Text="Processed " Style="{StaticResource HelperTextStyle}" />
+                                <TextBlock x:Name="DocumentsMetricText" Text="0" FontWeight="SemiBold" Margin="2,0,18,0" />
+                                <TextBlock Text="Succeeded " Style="{StaticResource HelperTextStyle}" />
+                                <TextBlock x:Name="SucceededMetricText" Text="0" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" Margin="2,0,18,0" />
+                                <TextBlock Text="Failed " Style="{StaticResource HelperTextStyle}" />
+                                <TextBlock x:Name="FailedMetricText" Text="0" FontWeight="SemiBold" Foreground="{DynamicResource ErrorBrush}" Margin="2,0,18,0" />
+                                <TextBlock Text="Tokens " Style="{StaticResource HelperTextStyle}" />
+                                <TextBlock x:Name="TokensMetricText" Text="0" FontWeight="SemiBold" Margin="2,0,18,0" />
+                                <TextBlock Text="Estimated Standard API cost " Style="{StaticResource HelperTextStyle}" />
+                                <TextBlock x:Name="CostMetricText" Text="$0.00000000" FontWeight="SemiBold" Foreground="{DynamicResource AccentTextBrush}" Margin="2,0,18,0" />
+                                <TextBlock Text="Time elapsed " Style="{StaticResource HelperTextStyle}" />
+                                <TextBlock x:Name="ElapsedTimeMetricText" Text="00:00:00" FontWeight="SemiBold" Foreground="{DynamicResource AccentTextBrush}" Margin="2,0,0,0" />
+                            </WrapPanel>
+                        </Grid>
+                    </Border>
+
+                    <DataGrid x:Name="ResultsGrid"
+                              Grid.Row="1"
+                              AutoGenerateColumns="True"
+                              IsReadOnly="True"
+                              HeadersVisibility="None"
+                              FrozenColumnCount="2"
+                              AutoGeneratingColumn="ResultsGrid_AutoGeneratingColumn"
+                              SelectionChanged="ResultsGrid_SelectionChanged"
+                              automation:AutomationProperties.Name="Extraction results" />
+                    <TextBlock x:Name="ResultsEmptyStateText"
+                               Grid.Row="1"
+                               Text="Scan an input folder to preview documents."
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               IsHitTestVisible="False"
+                               FontSize="13"
+                               Foreground="{DynamicResource MutedTextBrush}" />
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2"
+                Margin="0,14,0,0"
+                Padding="14"
+                Style="{StaticResource CardStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button x:Name="PreviewButton"
+                            Content="_Scan inputs"
+                            Margin="0,0,8,0"
+                            Click="PreviewButton_Click" />
+                    <Button x:Name="RunButton"
+                            Content="_Run extraction"
+                            Margin="0,0,8,0"
+                            IsDefault="True"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Click="RunButton_Click" />
+                    <Button x:Name="CancelButton"
+                            Content="_Cancel"
+                            IsEnabled="False"
+                            Click="CancelButton_Click" />
+                </StackPanel>
+
+                <Grid Grid.Column="2" VerticalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="StatusTextBlock"
+                                   Text="Ready. Scan a folder to preview the document list."
+                                   TextTrimming="CharacterEllipsis"
+                                   FontSize="12.5"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   automation:AutomationProperties.LiveSetting="Polite" />
+                        <TextBlock x:Name="ProgressPercentageText"
+                                   Grid.Column="1"
+                                   Margin="12,0,0,0"
+                                   Text="0%"
+                                   FontSize="12.5"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource AccentTextBrush}" />
+                    </Grid>
+                    <ProgressBar x:Name="ProgressBar"
+                                 Grid.Row="1"
+                                 Height="8"
+                                 Margin="0,7,0,0"
+                                 Minimum="0"
+                                 Maximum="100"
+                                 Foreground="{DynamicResource AccentBrush}"
+                                 Background="{DynamicResource ProgressTrackBrush}" />
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

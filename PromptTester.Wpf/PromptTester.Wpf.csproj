@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>CChaliotis.PromptTester</AssemblyName>
+    <RootNamespace>PromptTester.Wpf</RootNamespace>
+    <AssemblyTitle>Prompt Tester</AssemblyTitle>
+    <Product>Prompt Tester</Product>
+    <Authors>C. Chaliotis</Authors>
+    <Company>C. Chaliotis</Company>
+    <Copyright>Copyright © 2026 C. Chaliotis</Copyright>
+    <Description>AI document extraction, prompt evaluation, decision audit, and batch reporting.</Description>
+    <ApplicationIcon>Assets\prompt-tester-app-icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\prompt-tester-app-icon.ico" />
+    <Resource Include="Assets\prompt-tester-logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\COPYRIGHT.md"
+             Link="COPYRIGHT.md"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\Profiles\*.json"
+             Link="Profiles\%(Filename)%(Extension)"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

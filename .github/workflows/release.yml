@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  publish-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Publish self-contained Windows build
+        run: >-
+          dotnet publish PromptTester.Wpf\PromptTester.Wpf.csproj
+          -c Release
+          -r win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:DebugType=None
+          -p:DebugSymbols=false
+          -o publish\win-x64
+
+      - name: Verify release contents
+        shell: pwsh
+        run: |
+          if (-not (Test-Path -LiteralPath publish\win-x64\COPYRIGHT.md)) {
+            throw "COPYRIGHT.md is missing from the release output."
+          }
+          if (Get-ChildItem -LiteralPath publish\win-x64 -Filter *.pdb -Recurse) {
+            throw "Debug symbol files must not be included in the public release."
+          }
+
+      - name: Create archive
+        shell: pwsh
+        run: Compress-Archive -Path publish\win-x64\* -DestinationPath Prompt-Tester-${{ github.ref_name }}-win-x64.zip
+
+      - name: Create GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" "Prompt-Tester-${{ github.ref_name }}-win-x64.zip" --generate-notes --verify-tag
